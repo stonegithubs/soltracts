@@ -1,51 +1,53 @@
-# Forge Template
+# Soltracts
 
-A template for quickly getting started with forge.
+A set of modern and efficient solidity smart contracts.
 
-## Getting Started
+## Installation
 
-```bash
-mkdir my-project
-cd my-project
-forge init --template https://github.com/DaniPopes/forge-template
+To install with [**DappTools**](https://github.com/dapphub/dapptools):
 
-# initialize submodule dependencies
-git submodule update --init --recursive 
-
-# install development dependencies
-yarn
+```sh
+dapp install danipopes/soltracts
 ```
 
-## Features
+To install with [**Foundry**](https://github.com/gakonst/foundry):
 
-### Testing Utilities
-
-Includes common testing contracts like `Hevm.sol` and `Console.sol`, as well as a `Utilities.sol` contract with common testing methods like creating users with an initial balance.
-
-### Dependencies
-
-`ds-test` and `solmate` are already installed.
-
-### Scripts
-
-Pre-configured `prettier` and `solhint`. Yarn is used for linting, make for everything else.
-
-```bash
-# all are configured to run the solc optimizer with 100000 runs
-make build
-make test
-# test with verbosity 3
-make trace
-make clean
-make snapshot
-# runs yarn lint
-make lint
-
-yarn lint
-# doesn't write
-yarn lint:check
+```sh
+forge install danipopes/soltracts
 ```
+
+## Test
+
+Tests use [Foundry: Forge](https://github.com/gakonst/foundry).
+
+### Install Forge
+
+```sh
+cargo install --git https://github.com/gakonst/foundry --bin forge --locked
+```
+
+### Run tests
+
+```sh
+# Get dependencies
+forge update
+
+# Run tests
+forge test
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+## Disclaimer
+
+_These smart contracts are being provided as is. No guarantee, representation or warranty is being made, express or implied, as to the safety or correctness of the user interface or the smart contracts. They have not been audited and as such there can be no assurance they will work as intended, and users may experience delays, failures, errors, omissions or loss of transmitted information. DaniPopes is not liable for any of the foregoing. Users should proceed with caution and use at their own risk._
 
 ## Acknowledgements
 
-Inspired by [@Gakonst](https://github.com/gakonst/)'s and [@FrankieIsLost](https://github.com/FrankieIsLost/forge-template)'s forge templates.
+These contracts were inspired by or directly modified from many sources, primarily:
+
+- [Chiru-Labs](https://github.com/chiru-labs/ERC721A)
+- [Solmate](https://github.com/Rari-Capital/solmate)
+- [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
