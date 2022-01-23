@@ -1,0 +1,29 @@
+{
+  "name": "forge-template",
+  "author": "DaniPopes",
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "A forge template",
+  "homepage": "https://github.com/DaniPopes/forge-template#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaniPopes/forge-template.git"
+  },
+  "files": [
+    "*.sol"
+  ],
+  "devDependencies": {
+    "prettier": "^2.5.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "solhint": "^3.3.6",
+    "solhint-plugin-prettier": "^0.0.5"
+  },
+  "scripts": {
+    "lint": "yarn prettier && yarn solhint",
+    "lint:check": "yarn prettier:check && yarn solhint:check",
+    "prettier": "yarn prettier:check --write",
+    "prettier:check": "prettier --check \"src/**/*.sol\"",
+    "solhint": "yarn solhint:check --fix",
+    "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\""
+  }
+}

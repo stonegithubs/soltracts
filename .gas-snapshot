@@ -1,0 +1,7 @@
+testDeployGas(uint256) (runs: 256, μ: 1854761, ~: 1854763)
+testSafeMintGas(uint256) (runs: 256, μ: 52376, ~: 52055)
+testSafeMintGas1() (gas: 49483)
+testSafeMintGas2() (gas: 51421)
+testSafeMintGas3() (gas: 53359)
+testSafeMintGas4() (gas: 55306)
+testSafeMintGas5() (gas: 57300)

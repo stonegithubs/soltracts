@@ -1,0 +1,6 @@
+# folders
+.yarn/
+lib/
+build/
+dist/
+node_modules/
