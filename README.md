@@ -1,19 +1,19 @@
-# Soltracts
+# soltracts
 
 A set of modern and efficient solidity smart contracts.
 
 ## Installation
 
-To install with [**DappTools**](https://github.com/dapphub/dapptools):
-
-```sh
-dapp install danipopes/soltracts
-```
-
 To install with [**Foundry**](https://github.com/gakonst/foundry):
 
 ```sh
 forge install danipopes/soltracts
+```
+
+To install with [**DappTools**](https://github.com/dapphub/dapptools):
+
+```sh
+dapp install danipopes/soltracts
 ```
 
 ## Test
@@ -23,7 +23,8 @@ Tests use [Foundry: Forge](https://github.com/gakonst/foundry).
 ### Install Forge
 
 ```sh
-cargo install --git https://github.com/gakonst/foundry --bin forge --locked
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
 ```
 
 ### Run tests
@@ -49,5 +50,5 @@ _These smart contracts are being provided as is. No guarantee, representation or
 These contracts were inspired by or directly modified from many sources, primarily:
 
 - [Chiru-Labs](https://github.com/chiru-labs/ERC721A)
-- [Solmate](https://github.com/Rari-Capital/solmate)
+- [Rari-Capital](https://github.com/Rari-Capital/solmate)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
