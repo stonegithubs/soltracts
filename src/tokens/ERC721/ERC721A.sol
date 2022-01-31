@@ -477,20 +477,19 @@ abstract contract ERC721A {
 		unchecked {
 			_addressData[from].balance -= 1;
 			_addressData[to].balance += 1;
-		}
 
-		// Set new owner
-		_ownerships[id].owner = to;
+			// Set new owner
+			_ownerships[id].owner = to;
 
-		// If the ownership slot of id + 1 is not explicitly set, that means the transfer initiator owns it.
-		// Set the slot of id + 1 explicitly in storage to maintain correctness for ownerOf(id + 1) calls.
-		uint256 nextId = id + 1;
-		if (_ownerships[nextId].owner == address(0)) {
-			if (_exists(nextId)) {
-				_ownerships[nextId].owner = prevOwnership.owner;
+			uint256 nextId = id + 1;
+			// If the ownership slot of id + 1 is not explicitly set, that means the transfer initiator owns it.
+			// Set the slot of id + 1 explicitly in storage to maintain correctness for ownerOf(id + 1) calls.
+			if (_ownerships[nextId].owner == address(0)) {
+				if (_exists(nextId)) {
+					_ownerships[nextId].owner = prevOwnership.owner;
+				}
 			}
 		}
-
 		emit Transfer(from, to, id);
 	}
 
@@ -503,7 +502,7 @@ abstract contract ERC721A {
 	/// @param to The address the tokens to be minted to.
 	/// @param amount The amount of tokens to be be minted.
 	function _mint(address to, uint256 amount) internal virtual {
-		// Counter overflow is incredibly unrealistic.
+		// Counter or mint amount overflow is incredibly unrealistic.
 		unchecked {
 			uint256 startId = currentIndex;
 			require(to != address(0), "INVALID_RECIPIENT");
@@ -514,6 +513,11 @@ abstract contract ERC721A {
 
 			_ownerships[startId].owner = to;
 			_ownerships[startId].timestamp = uint96(block.timestamp);
+
+			// AddressData memory addressData = _addressData[to];
+			// _addressData[to] = AddressData(addressData.balance + uint128(amount), addressData.numberMinted + uint128(amount));
+
+			// _ownerships[startId] = TokenOwnership(to, uint96(block.timestamp));
 
 			for (uint256 i; i < amount; i++) {
 				emit Transfer(address(0), to, startId);
