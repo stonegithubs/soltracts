@@ -483,19 +483,11 @@ abstract contract ERC721A {
 			require(to != address(0), "INVALID_RECIPIENT");
 			require(amount != 0 && amount - 1 < maxBatchSize, "INVALID_AMOUNT");
 
-			// _addressData[to].balance += uint128(amount);
-			// _addressData[to].numberMinted += uint128(amount);
+			_addressData[to].balance += uint128(amount);
+			_addressData[to].numberMinted += uint128(amount);
 
-			// _ownerships[startId].owner = to;
-			// _ownerships[startId].timestamp = block.timestamp;
-
-			AddressData memory addressData = _addressData[to];
-        		_addressData[to] = AddressData(
-            		addressData.balance + uint128(amount),
-            		addressData.numberMinted + uint128(amount)
-        	);
-
-        	_ownerships[startId] = TokenOwnership(to, uint64(block.timestamp));
+			_ownerships[startId].owner = to;
+			_ownerships[startId].timestamp = uint96(block.timestamp);
 
 			for (uint256 i; i < amount; i++) {
 				emit Transfer(address(0), to, startId);
