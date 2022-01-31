@@ -57,9 +57,6 @@ abstract contract ERC721A {
 	/// Initializing to 0 requires modifying {totalSupply}, {_exists} and {_idsOfOwner}.
 	uint256 internal currentIndex = 1;
 
-	/// @dev Max mint per {_mint} call.
-	uint256 internal immutable maxBatchSize;
-
 	/// @dev id => owner
 	mapping(uint256 => TokenOwnership) internal _ownerships;
 	// mapping(uint256 => address) internal _owners;
@@ -81,22 +78,14 @@ abstract contract ERC721A {
 
 	/** CONSTRUCTOR */
 
-	/// @notice Constructor
-	/// @dev Requirements:
-	/// - `_maxBatchSize` must not be 0.
 	/// @param _name The collection name.
 	/// @param _symbol The collection symbol.
-	/// @param _maxBatchSize The max mint per {_mint} call.
 	constructor(
 		string memory _name,
-		string memory _symbol,
-		uint256 _maxBatchSize
+		string memory _symbol
 	) {
-		require(_maxBatchSize != 0, "INVALID_BATCH_SIZE");
-
 		name = _name;
 		symbol = _symbol;
-		maxBatchSize = _maxBatchSize;
 	}
 
 	/** ERC721Enumerable LOGIC */
@@ -396,18 +385,12 @@ abstract contract ERC721A {
 		return uint256(_addressData[owner].numberMinted);
 	}
 
-	function _ownershipOf(uint256 id) internal view virtual returns (TokenOwnership memory) {
+	function _ownershipOf(uint256 id) internal view virtual returns (TokenOwnership memory ownership) {
 		require(_exists(id), "NONEXISTENT_TOKEN");
 
 		unchecked {
-			uint256 lowestTokenToCheck;
-
-			if (id + 1 > maxBatchSize) {
-				lowestTokenToCheck = id - maxBatchSize + 1;
-			}
-
-			for (uint256 i = id; i + 1 > lowestTokenToCheck; i--) {
-				TokenOwnership memory ownership = _ownerships[i];
+			for (uint256 i = id; i == type(uint256).max; i--) {
+				ownership = _ownerships[i];
 				if (ownership.owner != address(0)) {
 					return ownership;
 				}
@@ -502,27 +485,23 @@ abstract contract ERC721A {
 	/// @param to The address the tokens to be minted to.
 	/// @param amount The amount of tokens to be be minted.
 	function _mint(address to, uint256 amount) internal virtual {
+		uint256 startId = currentIndex;
+		require(to != address(0), "INVALID_RECIPIENT");
+		require(amount != 0, "INVALID_AMOUNT");
+
 		// Counter or mint amount overflow is incredibly unrealistic.
 		unchecked {
-			uint256 startId = currentIndex;
-			require(to != address(0), "INVALID_RECIPIENT");
-			require(amount != 0 && amount - 1 < maxBatchSize, "INVALID_AMOUNT");
-
 			_addressData[to].balance += uint128(amount);
 			_addressData[to].numberMinted += uint128(amount);
 
 			_ownerships[startId].owner = to;
 			_ownerships[startId].timestamp = uint96(block.timestamp);
 
-			// AddressData memory addressData = _addressData[to];
-			// _addressData[to] = AddressData(addressData.balance + uint128(amount), addressData.numberMinted + uint128(amount));
-
-			// _ownerships[startId] = TokenOwnership(to, uint96(block.timestamp));
-
 			for (uint256 i; i < amount; i++) {
 				emit Transfer(address(0), to, startId);
 				startId++;
 			}
+
 			currentIndex = startId;
 		}
 	}
