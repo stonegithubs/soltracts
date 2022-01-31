@@ -21,7 +21,6 @@ abstract contract ERC721ATradable is ERC721A {
 	/// @dev OpenSea Proxy Registry for whitelisting proxy addresses in {isApprovedForAll}.
 	IProxyRegistry internal immutable proxyRegistry;
 
-	/// @notice Constructor
 	/// @dev Requirements:
 	/// - `_proxyRegistry` must not be the 0 address.
 	/// OpenSea proxy registry addresses:
