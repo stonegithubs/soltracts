@@ -79,8 +79,8 @@ contract TestERC721A is DSTest {
 		assertEq(erc721a.balanceOf(to), 2);
 	}
 
-  	// First transfer, 54388
-  	// Second transfer, 9756
+	// First transfer, 54388
+	// Second transfer, 9756
 	function testSafeTransferFromGas() public {
 		address to = getRandomAddress(69);
 		erc721a.safeMint(address(this), 2);
@@ -95,6 +95,7 @@ contract TestERC721A is DSTest {
 	}
 
 	uint256 internal constant amount = 5;
+
 	// average: 29000-30500 per token
 	function testBatchTransferFromGas() public {
 		address to = getRandomAddress(69420);
@@ -102,7 +103,7 @@ contract TestERC721A is DSTest {
 		erc721a.safeMint(address(this), amount);
 
 		uint256[] memory ids = new uint256[](amount);
-		for(uint256 i; i < amount; i++) {
+		for (uint256 i; i < amount; i++) {
 			ids[i] = i + 1;
 		}
 
@@ -124,7 +125,7 @@ contract TestERC721A is DSTest {
 		erc721a.safeMint(address(this), amount);
 
 		uint256[] memory ids = new uint256[](amount);
-		for(uint256 i; i < amount; i++) {
+		for (uint256 i; i < amount; i++) {
 			ids[i] = i + 1;
 		}
 

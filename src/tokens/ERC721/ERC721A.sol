@@ -80,10 +80,7 @@ abstract contract ERC721A {
 
 	/// @param _name The collection name.
 	/// @param _symbol The collection symbol.
-	constructor(
-		string memory _name,
-		string memory _symbol
-	) {
+	constructor(string memory _name, string memory _symbol) {
 		name = _name;
 		symbol = _symbol;
 	}
@@ -388,12 +385,12 @@ abstract contract ERC721A {
 	function _ownershipOf(uint256 id) internal view virtual returns (TokenOwnership memory ownership) {
 		require(_exists(id), "NONEXISTENT_TOKEN");
 
-			for (uint256 i = id; ; i--) {
-				ownership = _ownerships[i];
-				if (ownership.owner != address(0)) {
-					return ownership;
-				}
+		for (uint256 i = id; ; i--) {
+			ownership = _ownerships[i];
+			if (ownership.owner != address(0)) {
+				return ownership;
 			}
+		}
 
 		revert("NOT_FOUND");
 	}
