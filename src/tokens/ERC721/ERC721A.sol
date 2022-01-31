@@ -284,9 +284,13 @@ abstract contract ERC721A {
 	/// @param from The address the token are being transferred from.
 	/// @param to The address the tokens are being transferred to.
 	/// @param ids An array of the token ids to be transferred.
-	function batchTransferFrom(address from, address to, uint256[] calldata ids) public virtual {
+	function batchTransferFrom(
+		address from,
+		address to,
+		uint256[] calldata ids
+	) public virtual {
 		uint256 length = ids.length;
-		for(uint256 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			transferFrom(from, to, ids[i]);
 		}
 	}
@@ -297,9 +301,13 @@ abstract contract ERC721A {
 	/// @param from The address the token are being transferred from.
 	/// @param to An array of the addresses the tokens are being transferred to.
 	/// @param ids An array of the token ids to be transferred.
-	function batchTransferFrom(address from, address[] calldata to, uint256[] calldata ids) public virtual {
+	function batchTransferFrom(
+		address from,
+		address[] calldata to,
+		uint256[] calldata ids
+	) public virtual {
 		uint256 length = ids.length;
-		for(uint256 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			transferFrom(from, to[i], ids[i]);
 		}
 	}
@@ -309,9 +317,13 @@ abstract contract ERC721A {
 	/// @param from The address the token are being transferred from.
 	/// @param to The address the tokens are being transferred to.
 	/// @param ids An array of the token ids to be transferred.
-	function batchSafeTransferFrom(address from, address to, uint256[] calldata ids) public virtual {
+	function batchSafeTransferFrom(
+		address from,
+		address to,
+		uint256[] calldata ids
+	) public virtual {
 		uint256 length = ids.length;
-		for(uint256 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			safeTransferFrom(from, to, ids[i]);
 		}
 	}
@@ -321,9 +333,13 @@ abstract contract ERC721A {
 	/// @param from The address the token are being transferred from.
 	/// @param to An array of the addresses the tokens are being transferred to.
 	/// @param ids An array of the token ids to be transferred.
-	function batchSafeTransferFrom(address from, address[] calldata to, uint256[] calldata ids) public virtual {
+	function batchSafeTransferFrom(
+		address from,
+		address[] calldata to,
+		uint256[] calldata ids
+	) public virtual {
 		uint256 length = ids.length;
-		for(uint256 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			safeTransferFrom(from, to[i], ids[i]);
 		}
 	}
@@ -334,9 +350,14 @@ abstract contract ERC721A {
 	/// @param to The address the tokens are being transferred to.
 	/// @param ids An array of the token ids to be transferred.
 	/// @param data An array of calldatas to pass in the {ERC721TokenReceiver-onERC721Received} callback.
-	function batchSafeTransferFrom(address from, address to, uint256[] calldata ids, bytes[] calldata data) public virtual {
+	function batchSafeTransferFrom(
+		address from,
+		address to,
+		uint256[] calldata ids,
+		bytes[] calldata data
+	) public virtual {
 		uint256 length = ids.length;
-		for(uint256 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			safeTransferFrom(from, to, ids[i], data[i]);
 		}
 	}
@@ -347,9 +368,14 @@ abstract contract ERC721A {
 	/// @param to An array of the addresses the tokens are being transferred to.
 	/// @param ids An array of the token ids to be transferred.
 	/// @param data An array of calldatas to pass in the {ERC721TokenReceiver-onERC721Received} callback.
-	function batchSafeTransferFrom(address from, address[] calldata to, uint256[] calldata ids, bytes[] calldata data) public virtual {
+	function batchSafeTransferFrom(
+		address from,
+		address[] calldata to,
+		uint256[] calldata ids,
+		bytes[] calldata data
+	) public virtual {
 		uint256 length = ids.length;
-		for(uint256 i; i < length; i++) {
+		for (uint256 i; i < length; i++) {
 			safeTransferFrom(from, to[i], ids[i], data[i]);
 		}
 	}
@@ -411,7 +437,7 @@ abstract contract ERC721A {
 			interfaceId == 0x01ffc9a7 || // ERC165 Interface ID for ERC165
 			interfaceId == 0x80ac58cd || // ERC165 Interface ID for ERC721
 			interfaceId == 0x5b5e139f || // ERC165 Interface ID for ERC721Metadata
-			interfaceId == 0x780e9d63;   // ERC165 Interface ID for ERC721Enumerable
+			interfaceId == 0x780e9d63; // ERC165 Interface ID for ERC721Enumerable
 	}
 
 	/** INTERNAL */
