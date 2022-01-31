@@ -63,17 +63,29 @@ contract TestERC721A is DSTest {
 	}
 
 	function testSafeTransferFromGas() public {
-		vm.startPrank(address(1));
-		erc721a.safeMint(address(1), 2);
-		erc721a.safeTransferFrom(address(1), address(2), 1);
-		erc721a.safeTransferFrom(address(1), address(2), 1);
+		address to = getRandomAddress(69);
+		erc721a.safeMint(address(this), 2);
+
+		uint256 g = gasleft();
+		erc721a.safeTransferFrom(address(this), to, 1);
+		console.log("First transfer", g - gasleft());
+
+		g = gasleft();
+		erc721a.safeTransferFrom(address(this), to, 2);
+		console.log("Second transfer", g - gasleft());
 	}
 
 	function testTransferFromGas() public {
-		vm.startPrank(address(1));
-		erc721a.safeMint(address(1), 2);
-		erc721a.transferFrom(address(1), address(2), 1);
-		erc721a.transferFrom(address(1), address(2), 1);
+		address to = getRandomAddress(420);
+		erc721a.safeMint(address(this), 2);
+
+		uint256 g = gasleft();
+		erc721a.transferFrom(address(this), to, 1);
+		console.log("First transfer", g - gasleft());
+
+		g = gasleft();
+		erc721a.transferFrom(address(this), to, 2);
+		console.log("Second transfer", g - gasleft());
 	}
 
 	function onERC721Received(
