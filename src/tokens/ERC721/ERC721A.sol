@@ -388,14 +388,12 @@ abstract contract ERC721A {
 	function _ownershipOf(uint256 id) internal view virtual returns (TokenOwnership memory ownership) {
 		require(_exists(id), "NONEXISTENT_TOKEN");
 
-		unchecked {
-			for (uint256 i = id; i == type(uint256).max; i--) {
+			for (uint256 i = id; ; i--) {
 				ownership = _ownerships[i];
 				if (ownership.owner != address(0)) {
 					return ownership;
 				}
 			}
-		}
 
 		revert("NOT_FOUND");
 	}
@@ -480,7 +478,6 @@ abstract contract ERC721A {
 	/// Requirements:
 	/// - there must be `amount` tokens remaining unminted in the total collection.
 	/// - `to` cannot be the zero address.
-	/// - `amount` cannot be larger than the max batch size.
 	/// Emits `amount` {Transfer} events.
 	/// @param to The address the tokens to be minted to.
 	/// @param amount The amount of tokens to be be minted.

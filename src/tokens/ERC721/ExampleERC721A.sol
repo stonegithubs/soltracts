@@ -15,9 +15,8 @@ contract ExampleERC721A is ERC721A, Ownable, ReentrancyGuard {
 	constructor(
 		string memory _name,
 		string memory _symbol,
-		uint256 _maxBatchSize,
 		string memory _baseURI
-	) payable ERC721A(_name, _symbol, _maxBatchSize) {
+	) payable ERC721A(_name, _symbol) {
 		baseURI = _baseURI;
 	}
 
