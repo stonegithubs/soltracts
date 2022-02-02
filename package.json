@@ -1,13 +1,13 @@
 {
-  "name": "forge-template",
+  "name": "soltracts",
   "author": "DaniPopes",
   "license": "MIT",
   "version": "1.0.0",
-  "description": "A forge template",
-  "homepage": "https://github.com/DaniPopes/forge-template#readme",
+  "description": "Modern and efficient suite of smart contracts",
+  "homepage": "https://github.com/DaniPopes/soltracts#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DaniPopes/forge-template.git"
+    "url": "git+https://github.com/DaniPopes/soltracts.git"
   },
   "files": [
     "*.sol"

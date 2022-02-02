@@ -30,31 +30,31 @@ contract TestERC721A is DSTest {
 
 	function testSafeMintGas1() public {
 		unchecked {
-			erc721a.safeMint(address(1), 1);
+			erc721a.safeMint(address(this), 1);
 		}
 	}
 
 	function testSafeMintGas2() public {
 		unchecked {
-			erc721a.safeMint(address(1), 2);
+			erc721a.safeMint(address(this), 2);
 		}
 	}
 
 	function testSafeMintGas3() public {
 		unchecked {
-			erc721a.safeMint(address(1), 3);
+			erc721a.safeMint(address(this), 3);
 		}
 	}
 
 	function testSafeMintGas4() public {
 		unchecked {
-			erc721a.safeMint(address(1), 4);
+			erc721a.safeMint(address(this), 4);
 		}
 	}
 
 	function testSafeMintGas5() public {
 		unchecked {
-			erc721a.safeMint(address(1), 5);
+			erc721a.safeMint(address(this), 5);
 		}
 	}
 
