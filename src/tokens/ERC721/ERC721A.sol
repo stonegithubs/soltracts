@@ -35,6 +35,7 @@ abstract contract ERC721A {
 	string public symbol;
 
 	/// @notice Returns the Uniform Resource Identifier (URI) for `id` token.
+	/// @dev Not implemented in the {ERC721A}.
 	/// @param id The token ID.
 	/// @return The URI for `id` token.
 	function tokenURI(uint256 id) public view virtual returns (string memory);
@@ -51,13 +52,13 @@ abstract contract ERC721A {
 		uint96 timestamp;
 	}
 
-	/// @dev Increments for each minted token.
+	/// @dev Index that increments for each minted token.
 	/// Initialized to 1 to make all token ids (1 : `maxSupply`) instead of (0 : (`maxSupply` - 1)).
 	/// Although `maxSupply` is not implemented, it is recommended in all contracts using this implementation.
 	/// Initializing to 0 requires modifying {totalSupply}, {_exists} and {_idsOfOwner}.
 	uint256 internal currentIndex = 1;
 
-	/// @dev id => owner
+	/// @dev ID => TokenOwnership
 	mapping(uint256 => TokenOwnership) internal _ownerships;
 	// mapping(uint256 => address) internal _owners;
 
@@ -66,14 +67,10 @@ abstract contract ERC721A {
 
 	/** ERC721 STORAGE */
 
-	/// @notice Returns the account approved for `id` token, reset on transfers.
-	/// @dev id => approved
-	/// @return The account approved for `id` token.
-	mapping(uint256 => address) public getApproved;
+	/// @dev ID => approved
+	mapping(uint256 => address) internal _getApproved;
 
-	/// @notice Returns true if the `operator` is allowed to manage all of the assets of `owner`.
 	/// @dev owner => operator => bool
-	/// Public function is made overridable to possibly contain logic for whitelisting OpenSea proxy addresses or other.
 	mapping(address => mapping(address => bool)) internal _isApprovedForAll;
 
 	/** CONSTRUCTOR */
@@ -88,6 +85,7 @@ abstract contract ERC721A {
 	/** ERC721Enumerable LOGIC */
 
 	/// @notice Returns the total amount of tokens stored by the contract.
+	/// @return Number of tokens minted so far.
 	function totalSupply() public view virtual returns (uint256) {
 		// currentIndex is initialized to 1 so it cannot underflow.
 		unchecked {
@@ -96,12 +94,12 @@ abstract contract ERC721A {
 	}
 
 	/// @notice Returns a token ID owned by `owner` at a given `index` of its token list.
-	/// @dev Use along with {balanceOf} to enumerate all of ``owner``'s tokens.
+	/// @dev Use along with {balanceOf} to enumerate all of `owner`'s tokens.
 	/// This read function is O({totalSupply}). If calling from a separate contract, be sure to test gas first.
 	/// It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
 	/// @param owner Address to query.
 	/// @param index Index to query.
-	/// @return Token id at index `index` of address `owner`.
+	/// @return Token ID at index `index` of address `owner`.
 	function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {
 		require(index < balanceOf(owner), "INVALID_INDEX");
 
@@ -128,36 +126,10 @@ abstract contract ERC721A {
 		revert("NOT_FOUND");
 	}
 
-	/// @notice Returns all token ids owned by `owner`.
-	/// This read function is O({totalSupply}). If calling from a separate contract, be sure to test gas first.
-	/// It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
-	/// @param owner Address to query.
-	/// @return ids Uint256 array of id's.
-	function _idsOfOwner(address owner) internal view virtual returns (uint256[] memory ids) {
-		uint128 bal = _addressData[owner].balance;
-		if (bal == 0) return ids;
-		ids = new uint256[](bal);
-		uint256 minted = currentIndex;
-		uint256 index;
-		address currOwner;
-		unchecked {
-			for (uint256 i = 1; i < minted; i++) {
-				address _owner = _ownerships[i].owner;
-				if (_owner != address(0)) {
-					currOwner = _owner;
-				}
-				if (currOwner == owner) {
-					ids[index++] = i;
-					if (index == bal) return ids;
-				}
-			}
-		}
-	}
-
 	/// @notice Returns a token ID at a given `index` of all the tokens stored by the contract.
 	/// @dev Use along with {totalSupply} to enumerate all tokens.
 	/// @param index Index to query.
-	/// @return Token id at index `index` in the entire supply.
+	/// @return Token ID at index `index` in the entire supply.
 	function tokenByIndex(uint256 index) public view virtual returns (uint256) {
 		require(_exists(index), "NONEXISTENT_TOKEN");
 		return index;
@@ -173,22 +145,31 @@ abstract contract ERC721A {
 	/// - `id` must exist.
 	/// Emits an {Approval} event.
 	/// @param spender Address of the spender to approve to.
-	/// @param id Token id to approve.
+	/// @param id Token ID to approve.
 	function approve(address spender, uint256 id) public virtual {
 		address owner = ownerOf(id);
 
-		require(msg.sender == owner || isApprovedForAll(owner, msg.sender), "NOT_AUTHORIZED");
+		require(isApprovedForAll(owner, msg.sender) || msg.sender == owner, "NOT_AUTHORIZED");
 
-		getApproved[id] = spender;
+		_getApproved[id] = spender;
 
 		emit Approval(owner, spender, id);
+	}
+
+	/// @notice Returns the account approved for a token ID.
+	/// @dev Requirements:
+	/// - `id` must exist.
+	/// @return The account approved for `id` token.
+	function getApproved(uint256 id) public virtual returns (address) {
+		require(_exists(id), "NONEXISTENT_TOKEN");
+		return _getApproved[id];
 	}
 
 	/// @notice Approve or remove `operator` as an operator for the caller.
 	/// @dev Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
 	/// Emits an {ApprovalForAll} event.
 	/// @param operator Address of the operator to be approved.
-	/// @param approved Boolean approval status. 0 clears it.
+	/// @param approved Approved status to set.
 	function setApprovalForAll(address operator, bool approved) public virtual {
 		_isApprovedForAll[msg.sender][operator] = approved;
 
@@ -212,7 +193,7 @@ abstract contract ERC721A {
 	/// Emits a {Transfer} event.
 	/// @param from The address the token is being transferred from.
 	/// @param to The address the token is being transferred to.
-	/// @param id The token id to be transferred.
+	/// @param id The token ID to be transferred.
 	function transferFrom(
 		address from,
 		address to,
@@ -230,7 +211,7 @@ abstract contract ERC721A {
 	/// Emits a {Transfer} event.
 	/// @param from The address the token is being transferred from.
 	/// @param to The address the token is being transferred to.
-	/// @param id The token id to be transferred.
+	/// @param id The token ID to be transferred.
 	function safeTransferFrom(
 		address from,
 		address to,
@@ -251,7 +232,7 @@ abstract contract ERC721A {
 	/// Additionally passes `data` in the callback.
 	/// @param from The address the token is being transferred from.
 	/// @param to The address the token is being transferred to.
-	/// @param id The token id to be transferred.
+	/// @param id The token ID to be transferred.
 	/// @param data The calldata to pass in the {ERC721TokenReceiver-onERC721Received} callback.
 	function safeTransferFrom(
 		address from,
@@ -264,109 +245,7 @@ abstract contract ERC721A {
 		require(to.code.length == 0 || ERC721TokenReceiver(to).onERC721Received(msg.sender, from, id, data) == ERC721TokenReceiver.onERC721Received.selector, "UNSAFE_RECIPIENT");
 	}
 
-	/// @notice Transfers `id` tokens from `from` to one `to` address.
-	/// WARNING: Usage of this method is discouraged, use {batchSafeTransferFrom} whenever possible.
-	/// @dev See {transferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to The address the tokens are being transferred to.
-	/// @param ids An array of the token ids to be transferred.
-	function batchTransferFrom(
-		address from,
-		address to,
-		uint256[] calldata ids
-	) public virtual {
-		uint256 length = ids.length;
-		for (uint256 i; i < length; i++) {
-			transferFrom(from, to, ids[i]);
-		}
-	}
-
-	/// @notice Transfers `id` tokens from `from` to many `to` addresses.
-	/// WARNING: Usage of this method is discouraged, use {batchSafeTransferFrom} whenever possible.
-	/// @dev See {transferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to An array of the addresses the tokens are being transferred to.
-	/// @param ids An array of the token ids to be transferred.
-	function batchTransferFrom(
-		address from,
-		address[] calldata to,
-		uint256[] calldata ids
-	) public virtual {
-		uint256 length = ids.length;
-		for (uint256 i; i < length; i++) {
-			transferFrom(from, to[i], ids[i]);
-		}
-	}
-
-	/// @notice Safely transfers `id` tokens from `from` to one `to` address.
-	/// @dev See {safeTransferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to The address the tokens are being transferred to.
-	/// @param ids An array of the token ids to be transferred.
-	function batchSafeTransferFrom(
-		address from,
-		address to,
-		uint256[] calldata ids
-	) public virtual {
-		uint256 length = ids.length;
-		for (uint256 i; i < length; i++) {
-			safeTransferFrom(from, to, ids[i]);
-		}
-	}
-
-	/// @notice Safely transfers `id` tokens from `from` to many `to` addresses.
-	/// @dev See {safeTransferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to An array of the addresses the tokens are being transferred to.
-	/// @param ids An array of the token ids to be transferred.
-	function batchSafeTransferFrom(
-		address from,
-		address[] calldata to,
-		uint256[] calldata ids
-	) public virtual {
-		uint256 length = ids.length;
-		for (uint256 i; i < length; i++) {
-			safeTransferFrom(from, to[i], ids[i]);
-		}
-	}
-
-	/// @notice Safely transfers `id` tokens from `from` to one `to` address.
-	/// @dev See {safeTransferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to The address the tokens are being transferred to.
-	/// @param ids An array of the token ids to be transferred.
-	/// @param data An array of calldatas to pass in the {ERC721TokenReceiver-onERC721Received} callback.
-	function batchSafeTransferFrom(
-		address from,
-		address to,
-		uint256[] calldata ids,
-		bytes[] calldata data
-	) public virtual {
-		uint256 length = ids.length;
-		for (uint256 i; i < length; i++) {
-			safeTransferFrom(from, to, ids[i], data[i]);
-		}
-	}
-
-	/// @notice Safely transfers `id` tokens from `from` to many `to` addresses.
-	/// @dev See {safeTransferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to An array of the addresses the tokens are being transferred to.
-	/// @param ids An array of the token ids to be transferred.
-	/// @param data An array of calldatas to pass in the {ERC721TokenReceiver-onERC721Received} callback.
-	function batchSafeTransferFrom(
-		address from,
-		address[] calldata to,
-		uint256[] calldata ids,
-		bytes[] calldata data
-	) public virtual {
-		uint256 length = ids.length;
-		for (uint256 i; i < length; i++) {
-			safeTransferFrom(from, to[i], ids[i], data[i]);
-		}
-	}
-
-	/// @notice Returns the number of tokens in `owner`'s account.
+	/// @notice Returns the number of tokens in an account.
 	/// @param owner Address to be queried.
 	/// @return Balance of `owner`.
 	function balanceOf(address owner) public view virtual returns (uint256) {
@@ -374,42 +253,20 @@ abstract contract ERC721A {
 		return uint256(_addressData[owner].balance);
 	}
 
-	/// @dev Returns the total number of tokens minted by `owner`.
-	/// @param owner Address to be queried.
-	/// @return Number of tokens minted by `owner`.
-	function numberMinted(address owner) public view virtual returns (uint256) {
-		require(owner != address(0), "INVALID_OWNER");
-		return uint256(_addressData[owner].numberMinted);
-	}
-
-	function _ownershipOf(uint256 id) internal view virtual returns (TokenOwnership memory ownership) {
-		require(_exists(id), "NONEXISTENT_TOKEN");
-
-		for (uint256 i = id; ; i--) {
-			ownership = _ownerships[i];
-			if (ownership.owner != address(0)) {
-				return ownership;
-			}
-		}
-
-		revert("NOT_FOUND");
-	}
-
-	/// @notice Returns the owner of the `id` token.
+	/// @notice Returns the owner of a token ID.
 	/// @dev Requirements:
 	/// - `id` must exist.
-	/// @param id Token id to be queried.
+	/// @param id Token ID to be queried.
 	function ownerOf(uint256 id) public view virtual returns (address) {
 		return _ownershipOf(id).owner;
 	}
 
 	/** ERC165 LOGIC */
 
-	/// @notice Returns true if this contract implements the interface defined by`interfaceId`.
+	/// @notice Returns true if this contract implements an interface from its ID.
 	/// @dev See the corresponding
 	/// [EIP section](https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified)
-	/// to learn more about how these ids are created.
-	/// This function call must use less than 30 000 gas.
+	/// to learn more about how these IDs are created.
 	function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
 		return
 			interfaceId == 0x01ffc9a7 || // ERC165 Interface ID for ERC165
@@ -420,12 +277,69 @@ abstract contract ERC721A {
 
 	/** INTERNAL */
 
-	/// @dev Returns whether `id` exists.
+	/// @dev Returns whether a token ID exists.
 	/// Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
-	/// Tokens start existing when they are minted (`_safeMint`).
-	/// @param id Token id to be queried.
+	/// Tokens start existing when they are minted.
+	/// @param id Token ID to be queried.
 	function _exists(uint256 id) internal view virtual returns (bool) {
 		return id != 0 && id < currentIndex;
+	}
+
+	/// @notice Returns all token IDs owned by an address.
+	/// This read function is O({totalSupply}). If calling from a separate contract, be sure to test gas first.
+	/// It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
+	/// @param owner Address to query.
+	/// @return ids An array of the ID's owned by `owner`.
+	function _idsOfOwner(address owner) internal view virtual returns (uint256[] memory ids) {
+		uint256 bal = uint256(_addressData[owner].balance);
+		if (bal == 0) return ids;
+
+		ids = new uint256[](bal);
+
+		uint256 minted = currentIndex;
+		address currOwner;
+		uint256 index;
+
+		unchecked {
+			for (uint256 i = 1; i < minted; i++) {
+				address _owner = _ownerships[i].owner;
+
+				if (_owner != address(0)) {
+					currOwner = _owner;
+				}
+
+				if (currOwner == owner) {
+					ids[index++] = i;
+					if (index == bal) return ids;
+				}
+			}
+		}
+	}
+
+	/// @dev Returns the total number of tokens minted by and address.
+	/// @param owner Address to be queried.
+	/// @return Number of tokens minted by `owner`.
+	function _numberMinted(address owner) public view virtual returns (uint256) {
+		require(owner != address(0), "INVALID_OWNER");
+		return uint256(_addressData[owner].numberMinted);
+	}
+
+	/// @dev Returns the ownership values for a token ID.
+	/// @param id Token ID to be queried.
+	/// @return {TokenOwnership} of `id`.
+	function _ownershipOf(uint256 id) internal view virtual returns (TokenOwnership memory) {
+		require(_exists(id), "NONEXISTENT_TOKEN");
+
+		unchecked {
+			for (uint256 curr = id; curr >= 0; curr--) {
+				TokenOwnership memory ownership = _ownerships[curr];
+				if (ownership.owner != address(0)) {
+					return ownership;
+				}
+			}
+		}
+
+		revert("NOT_FOUND");
 	}
 
 	/// @dev Transfers `id` from `from` to `to`.
@@ -435,7 +349,7 @@ abstract contract ERC721A {
 	/// Emits a {Transfer} event.
 	/// @param from The address the token is being transferred from.
 	/// @param to The address the token is being transferred to.
-	/// @param id The token id to be transferred.
+	/// @param id The token ID to be transferred.
 	function _transfer(
 		address from,
 		address to,
@@ -443,12 +357,12 @@ abstract contract ERC721A {
 	) internal virtual {
 		TokenOwnership memory prevOwnership = _ownershipOf(id);
 
-		require((msg.sender == prevOwnership.owner || getApproved[id] == msg.sender || isApprovedForAll(prevOwnership.owner, msg.sender)), "NOT_AUTHORIZED");
+		require((msg.sender == prevOwnership.owner || getApproved(id) == msg.sender || isApprovedForAll(prevOwnership.owner, msg.sender)), "NOT_AUTHORIZED");
 		require(prevOwnership.owner == from, "WRONG_FROM");
 		require(to != address(0), "INVALID_RECIPIENT");
 
 		// Clear approvals
-		delete getApproved[id];
+		delete _getApproved[id];
 
 		// Underflow of the sender's balance is impossible because we check for
 		// ownership above and the recipient's balance can't realistically overflow.
@@ -479,12 +393,13 @@ abstract contract ERC721A {
 	/// @param to The address the tokens to be minted to.
 	/// @param amount The amount of tokens to be be minted.
 	function _mint(address to, uint256 amount) internal virtual {
-		uint256 startId = currentIndex;
 		require(to != address(0), "INVALID_RECIPIENT");
 		require(amount != 0, "INVALID_AMOUNT");
 
 		// Counter or mint amount overflow is incredibly unrealistic.
 		unchecked {
+			uint256 startId = currentIndex;
+
 			_addressData[to].balance += uint128(amount);
 			_addressData[to].numberMinted += uint128(amount);
 

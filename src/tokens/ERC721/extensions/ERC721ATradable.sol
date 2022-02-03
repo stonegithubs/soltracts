@@ -14,9 +14,7 @@ interface IProxyRegistry {
 /// @notice ERC721A extension, inspired by @ProjectOpenSea's opensea-creatures (ERC721Tradable).
 /// Whitelists all OpenSea proxy addresses in {isApprovedForAll} and saves up to 50,000 gas for
 /// each account by removing the need to {setApprovalForAll} before being able to trade on the platform.
-/// @dev https://github.com/chiru-labs/ERC721A/issues/40
-/// Comes at the cost of being unable to revoke the approval,
-/// this makes preventing certain phishing attacks impossible.
+/// @dev Important issue: https://github.com/chiru-labs/ERC721A/issues/40
 abstract contract ERC721ATradable is ERC721A {
 	/// @dev OpenSea Proxy Registry for whitelisting proxy addresses in {isApprovedForAll}.
 	IProxyRegistry internal immutable proxyRegistry;
