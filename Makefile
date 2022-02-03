@@ -22,14 +22,14 @@ snapshot	:; make build -s && forge snapshot --root .
 # $VALUE is parsed as hexadecimal
 
 # Call
-# make call <ADDRESS> <SIG> [ARGS]...
-call		:; cast ${MAKECMDGOALS} --rpc-url ${ETH_RPC_URL}
+# make call <TO> <SIG> [ARGS]...
+call		:; cast ${MAKECMDGOALS} --rpc-url ${ETH_RPC_URL} --keystore ${KEYSTORE_PATH} --password ${KEYSTORE_PASSWORD} --from ${ETH_FROM}
 
 # Send
 # make send <TO> <SIG> [ARGS]...
-send		:; cast ${MAKECMDGOALS} --value ${ETH_VALUE} --rpc-url ${ETH_RPC_URL}
+send		:; cast ${MAKECMDGOALS} --rpc-url ${ETH_RPC_URL} --keystore ${KEYSTORE_PATH} --password ${KEYSTORE_PASSWORD} --from ${ETH_FROM} --value ${ETH_VALUE}
 
 # Deploy
 # $ARG<N> for any constructor arguments
 # make create <CONTRACT_NAME>
-create		:; make build -s && forge ${MAKECMDGOALS} --rpc-url ${ETH_RPC_URL} --constructor-args ${ARG_1} --constructor-args ${ARG_2} --constructor-args ${ARG_3}
+create		:; make build -s && forge ${MAKECMDGOALS} --rpc-url ${ETH_RPC_URL} --keystore ${KEYSTORE_PATH} --password ${KEYSTORE_PASSWORD} --from ${ETH_FROM} --constructor-args ${ARG_1} --constructor-args ${ARG_2} --constructor-args ${ARG_3}
