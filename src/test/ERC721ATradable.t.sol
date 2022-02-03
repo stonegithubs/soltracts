@@ -28,9 +28,8 @@ contract TestERC721ATradable is BaseTest {
 
 		erc721aTradable.safeMint(from, 5);
 
-		proxyRegistry.registerProxy(from);
+		address proxy = proxyRegistry.registerProxy(from);
 
-		address proxy = proxyRegistry.proxies(from);
 		console.log("Proxy registered", from, proxy);
 
 		assertTrue(erc721aTradable.isApprovedForAll(from, proxy));
