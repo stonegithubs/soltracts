@@ -8,6 +8,8 @@ import { Hevm } from "../utils/Hevm.sol";
 
 import { DSTestPlus } from "@solmate/src/test/utils/DSTestPlus.sol";
 
+// solhint-disable no-empty-blocks
+
 abstract contract BaseTest is DSTestPlus {
 	Hevm internal immutable vm = Hevm(HEVM_ADDRESS);
 
