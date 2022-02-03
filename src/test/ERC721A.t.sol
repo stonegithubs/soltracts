@@ -1,160 +1,100 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 
-import { DSTest } from "ds-test/test.sol";
-import { Utilities } from "./utils/Utilities.sol";
 import { console } from "./utils/Console.sol";
-import { Hevm } from "./utils/Hevm.sol";
-import { ExampleERC721A } from "../tokens/ERC721/ExampleERC721A.sol";
+import { BaseTest } from "./utils/BaseTest.sol";
+import { MockERC721A } from "./utils/mocks/MockERC721A.sol";
 
-contract TestERC721A is DSTest {
-	Hevm internal immutable vm = Hevm(HEVM_ADDRESS);
-
-	ExampleERC721A internal erc721a;
+contract TestERC721A is BaseTest {
+	MockERC721A internal erc721a;
 
 	function setUp() public {
-		erc721a = new ExampleERC721A("testname", "testsymbol", "https://example.com/12345/");
+		erc721a = new MockERC721A("testname", "testsymbol", "https://example.com/12345/");
 	}
 
 	function testDeployGas() public {
 		unchecked {
-			new ExampleERC721A("abcdefg", "xyz", "https://example.com/12345/");
+			new MockERC721A("abcdefg", "xyz", "https://example.com/12345/");
 		}
 	}
 
-	function testSafeMint() public {
-		uint256 _amount = 5;
-		erc721a.safeMint(address(this), _amount);
-		assertEq(erc721a.balanceOf(address(this)), _amount);
+	// uint160(keccak256("0x69"))
+	address private constant _to = 0xa29Cfe8c2b8F0CeA8C67AF4a20c2C9286D2562a6;
+
+	function testSafeMint(uint256 _amount) public {
+		uint256 amount = _amount % 128 + 1;
+		erc721a.safeMint(_to, amount);
+		assertEq(erc721a.balanceOf(_to), amount);
 	}
 
 	function testSafeMintGas1() public {
 		unchecked {
-			erc721a.safeMint(address(this), 1);
+			erc721a.safeMint(_to, 1);
 		}
 	}
 
 	function testSafeMintGas2() public {
 		unchecked {
-			erc721a.safeMint(address(this), 2);
+			erc721a.safeMint(_to, 2);
 		}
 	}
 
 	function testSafeMintGas3() public {
 		unchecked {
-			erc721a.safeMint(address(this), 3);
+			erc721a.safeMint(_to, 3);
 		}
 	}
 
 	function testSafeMintGas4() public {
 		unchecked {
-			erc721a.safeMint(address(this), 4);
+			erc721a.safeMint(_to, 4);
 		}
 	}
 
 	function testSafeMintGas5() public {
 		unchecked {
-			erc721a.safeMint(address(this), 5);
+			erc721a.safeMint(_to, 5);
 		}
 	}
 
-	// First transfer, 51755
-	// Second transfer, 9623
 	function testTransferFromGas() public {
-		address to = getRandomAddress(420);
-		erc721a.safeMint(address(this), 2);
+		address from = getRandomAddress(69420);
+		address to = getRandomAddress(420123);
+		vm.startPrank(from);
 
-		uint256 g = gasleft();
-		erc721a.transferFrom(address(this), to, 1);
-		console.log("First transfer", g - gasleft());
+		erc721a.safeMint(from, 2);
 
-		assertEq(erc721a.balanceOf(address(this)), 1);
+		startMeasuringGas("First transfer");
+		erc721a.transferFrom(from, to, 1);
+		stopMeasuringGas();
+
+		assertEq(erc721a.balanceOf(from), 1);
 		assertEq(erc721a.balanceOf(to), 1);
 
-		g = gasleft();
-		erc721a.transferFrom(address(this), to, 2);
-		console.log("Second transfer", g - gasleft());
+		startMeasuringGas("Second transfer");
+		stopMeasuringGas();
+		erc721a.transferFrom(from, to, 2);
 
-		assertEq(erc721a.balanceOf(address(this)), 0);
+		assertEq(erc721a.balanceOf(from), 0);
 		assertEq(erc721a.balanceOf(to), 2);
 	}
 
-	// First transfer, 54388
-	// Second transfer, 9756
 	function testSafeTransferFromGas() public {
-		address to = getRandomAddress(69);
-		erc721a.safeMint(address(this), 2);
+		address from = getRandomAddress(42069);
+		address to = getRandomAddress(69000);
+		vm.startPrank(from);
+		
+		erc721a.safeMint(from, 2);
 
-		uint256 g = gasleft();
-		erc721a.safeTransferFrom(address(this), to, 1);
-		console.log("First transfer", g - gasleft());
+		startMeasuringGas("First transfer");
+		erc721a.safeTransferFrom(from, to, 1);
+		stopMeasuringGas();
 
-		g = gasleft();
-		erc721a.safeTransferFrom(address(this), to, 2);
-		console.log("Second transfer", g - gasleft());
-	}
+		assertEq(erc721a.balanceOf(from), 1);
+		assertEq(erc721a.balanceOf(to), 1);
 
-	uint256 internal constant amount = 5;
-
-	// average: 29000-30500 per token
-	function testBatchTransferFromGas() public {
-		address to = getRandomAddress(69420);
-
-		erc721a.safeMint(address(this), amount);
-
-		uint256[] memory ids = new uint256[](amount);
-		for (uint256 i; i < amount; i++) {
-			ids[i] = i + 1;
-		}
-
-		uint256 g = gasleft();
-		erc721a.batchTransferFrom(address(this), to, ids);
-		g -= gasleft();
-		console.log("Transfer gas", g);
-		console.log("Average", g / amount);
-
-		assertEq(erc721a.balanceOf(address(this)), 0);
-		assertEq(erc721a.balanceOf(to), amount);
-
-		g = gasleft();
-	}
-
-	function testBatchSafeTransferFromGas() public {
-		address to = getRandomAddress(69420);
-
-		erc721a.safeMint(address(this), amount);
-
-		uint256[] memory ids = new uint256[](amount);
-		for (uint256 i; i < amount; i++) {
-			ids[i] = i + 1;
-		}
-
-		uint256 g = gasleft();
-		erc721a.batchSafeTransferFrom(address(this), to, ids);
-		g -= gasleft();
-		console.log("Transfer gas", g);
-		console.log("Average", g / amount);
-
-		assertEq(erc721a.balanceOf(address(this)), 0);
-		assertEq(erc721a.balanceOf(to), amount);
-
-		g = gasleft();
-	}
-
-	function onERC721Received(
-		address,
-		address,
-		uint256,
-		bytes calldata
-	) external pure returns (bytes4) {
-		return this.onERC721Received.selector;
-	}
-
-	function getRandom256(uint256 salt) private pure returns (uint256) {
-		return uint256(keccak256(abi.encodePacked(salt)));
-	}
-
-	function getRandomAddress(uint256 salt) private pure returns (address) {
-		return address(uint160(getRandom256(salt)));
+		startMeasuringGas("Second transfer");
+		erc721a.safeTransferFrom(from, to, 2);
+		stopMeasuringGas();
 	}
 }

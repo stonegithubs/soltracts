@@ -4,14 +4,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@solmate/src/utils/ReentrancyGuard.sol";
-import "./ERC721A.sol";
+import "../../../tokens/ERC721/ERC721A.sol";
 
 // solhint-disable no-empty-blocks
 
-/// @author @DaniPopes
-/// @notice Simple ERC721A Implementation for testing purposes only.
-/// Do not use in production.
-contract ExampleERC721A is ERC721A, Ownable, ReentrancyGuard {
+contract MockERC721A is ERC721A, Ownable, ReentrancyGuard {
 	constructor(
 		string memory _name,
 		string memory _symbol,

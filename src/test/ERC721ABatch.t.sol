@@ -1,0 +1,68 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+import { console } from "./utils/Console.sol";
+import { BaseTest } from "./utils/BaseTest.sol";
+import { MockERC721ABatch } from "./utils/mocks/MockERC721ABatch.sol";
+
+contract TestERC721ABatch is BaseTest {
+	MockERC721ABatch private erc721aBatch;
+
+	function setUp() public {
+		erc721aBatch = new MockERC721ABatch("testname", "testsymbol");
+	}
+	
+	function testDeployGas() public {
+		unchecked {
+			new MockERC721ABatch("abcdefg", "xyz");
+		}
+	}
+
+	uint256 internal constant amount = 50;
+
+	// average: 29000-30500 per token
+	function testBatchTransferFromGas() public {
+		address to = getRandomAddress(69420);
+
+		erc721aBatch.safeMint(address(this), amount);
+
+		uint256[] memory ids = new uint256[](amount);
+		for (uint256 i; i < amount; i++) {
+			ids[i] = i + 1;
+		}
+
+		uint256 g = gasleft();
+		erc721aBatch.batchTransferFrom(address(this), to, ids);
+		g -= gasleft();
+		console.log("Transfer gas", g);
+		console.log("Average", g / amount);
+
+		assertEq(erc721aBatch.balanceOf(address(this)), 0);
+		assertEq(erc721aBatch.balanceOf(to), amount);
+
+		g = gasleft();
+	}
+
+	function testBatchSafeTransferFromGas() public {
+		address to = getRandomAddress(69420);
+
+		erc721aBatch.safeMint(address(this), amount);
+
+		uint256[] memory ids = new uint256[](amount);
+		for (uint256 i; i < amount; i++) {
+			ids[i] = i + 1;
+		}
+
+		uint256 g = gasleft();
+		erc721aBatch.batchSafeTransferFrom(address(this), to, ids, "");
+		g -= gasleft();
+		console.log("Transfer gas", g);
+		console.log("Average", g / amount);
+
+		assertEq(erc721aBatch.balanceOf(address(this)), 0);
+		assertEq(erc721aBatch.balanceOf(to), amount);
+
+		g = gasleft();
+	}
+}
