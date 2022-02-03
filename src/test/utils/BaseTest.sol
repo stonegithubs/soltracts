@@ -40,9 +40,9 @@ abstract contract BaseTest is DSTestPlus {
 		return this.onERC1155BatchReceived.selector;
 	}
 
-	receive() external virtual payable {}
+	receive() external payable virtual {}
 
-	fallback() external virtual payable {}
+	fallback() external payable virtual {}
 
 	function getRandom256(uint256 salt) internal pure virtual returns (uint256) {
 		return uint256(keccak256(abi.encodePacked(salt)));

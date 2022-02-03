@@ -22,7 +22,7 @@ contract TestERC721A is BaseTest {
 	address private constant _to = 0xa29Cfe8c2b8F0CeA8C67AF4a20c2C9286D2562a6;
 
 	function testSafeMint(uint256 _amount) public {
-		uint256 amount = _amount % 128 + 1;
+		uint256 amount = (_amount % 128) + 1;
 		erc721a.safeMint(_to, amount);
 		assertEq(erc721a.balanceOf(_to), amount);
 	}
@@ -83,7 +83,7 @@ contract TestERC721A is BaseTest {
 		address from = getRandomAddress(42069);
 		address to = getRandomAddress(69000);
 		vm.startPrank(from);
-		
+
 		erc721a.safeMint(from, 2);
 
 		startMeasuringGas("First transfer");

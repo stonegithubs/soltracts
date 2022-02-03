@@ -12,7 +12,7 @@ contract TestERC721ABatch is BaseTest {
 	function setUp() public {
 		erc721aBatch = new MockERC721ABatch("testname", "testsymbol");
 	}
-	
+
 	function testDeployGas() public {
 		unchecked {
 			new MockERC721ABatch("abcdefg", "xyz");

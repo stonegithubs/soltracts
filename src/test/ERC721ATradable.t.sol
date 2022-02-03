@@ -15,7 +15,7 @@ contract TestERC721ATradable is BaseTest {
 		proxyRegistry = new MockProxyRegistry();
 		erc721aTradable = new MockERC721ATradable("testname", "testsymbol", address(proxyRegistry));
 	}
-	
+
 	function testDeployGas() public {
 		unchecked {
 			new MockERC721ATradable("abcdefg", "xyz", getRandomAddress(0x69));
