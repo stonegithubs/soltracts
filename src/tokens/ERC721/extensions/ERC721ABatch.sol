@@ -10,9 +10,9 @@ abstract contract ERC721ABatch is ERC721A {
 	/// @notice Transfers `id` tokens from `from` to one `to` address.
 	/// WARNING: Usage of this method is discouraged, use {batchSafeTransferFrom} whenever possible.
 	/// @dev See {ERC721A.transferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to The address the tokens are being transferred to.
-	/// @param ids An array of the token IDs to be transferred.
+	/// @param from The address to transfer from.
+	/// @param to The address to transfer to.
+	/// @param ids The token IDs to transfer.
 	function batchTransferFrom(
 		address from,
 		address to,
@@ -29,9 +29,9 @@ abstract contract ERC721ABatch is ERC721A {
 	/// @notice Transfers `id` tokens from `from` to many `to` addresses.
 	/// WARNING: Usage of this method is discouraged, use {batchSafeTransferFrom} whenever possible.
 	/// @dev See {ERC721A.transferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to An array of the addresses the tokens are being transferred to.
-	/// @param ids An array of the token IDs to be transferred.
+	/// @param from The address to transfer from.
+	/// @param to The addresses to transfer to.
+	/// @param ids The token IDs to transfer.
 	function batchTransferFrom(
 		address from,
 		address[] calldata to,
@@ -47,9 +47,9 @@ abstract contract ERC721ABatch is ERC721A {
 
 	/// @notice Safely transfers `id` tokens from `from` to one `to` address.
 	/// @dev See {ERC721A.safeTransferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to The address the tokens are being transferred to.
-	/// @param ids An array of the token IDs to be transferred.
+	/// @param from The address to transfer from.
+	/// @param to The address to transfer to.
+	/// @param ids The token IDs to transfer.
 	function batchSafeTransferFrom(
 		address from,
 		address to,
@@ -66,9 +66,9 @@ abstract contract ERC721ABatch is ERC721A {
 
 	/// @notice Safely transfers `id` tokens from `from` to many `to` addresses.
 	/// @dev See {ERC721A.safeTransferFrom}.
-	/// @param from The address the token are being transferred from.
-	/// @param to An array of the addresses the tokens are being transferred to.
-	/// @param ids An array of the token IDs to be transferred.
+	/// @param from The address to transfer from.
+	/// @param to The addresses to transfer to.
+	/// @param ids The token IDs to transfer.
 	function batchSafeTransferFrom(
 		address from,
 		address[] calldata to,

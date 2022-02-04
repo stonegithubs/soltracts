@@ -18,7 +18,7 @@ contract TestERC721A is BaseTest {
 		}
 	}
 
-	// uint160(keccak256("0x69"))
+	// uint160(keccak256("0x69")) - checksummed
 	address private constant _to = 0xa29Cfe8c2b8F0CeA8C67AF4a20c2C9286D2562a6;
 
 	function testSafeMint(uint256 _amount) public {
@@ -54,6 +54,12 @@ contract TestERC721A is BaseTest {
 	function testSafeMintGas5() public {
 		unchecked {
 			erc721a.safeMint(_to, 5);
+		}
+	}
+
+	function testSafeMintGasA() public {
+		unchecked {
+			erc721a.safeMint(_to, 10);
 		}
 	}
 

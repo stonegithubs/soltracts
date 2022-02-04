@@ -22,7 +22,7 @@ contract TestERC721ABatch is BaseTest {
 	uint256 internal constant amount = 50;
 
 	// average: 29000-30500 per token
-	function testBatchTransferFromGas() public {
+	function testBatchTransferFrom1() public {
 		address to = getRandomAddress(69420);
 
 		erc721aBatch.safeMint(address(this), amount);
@@ -41,10 +41,36 @@ contract TestERC721ABatch is BaseTest {
 		assertEq(erc721aBatch.balanceOf(address(this)), 0);
 		assertEq(erc721aBatch.balanceOf(to), amount);
 
-		g = gasleft();
+		for(uint256 i; i < amount; i++) {
+			assertEq(erc721aBatch.ownerOf(ids[i]), to);
+		}
 	}
 
-	function testBatchSafeTransferFromGas() public {
+	function testBatchTransferFrom2() public {
+		address[] memory to = new address[](amount);
+		for (uint256 i; i < amount; i++) {
+			to[i] = getRandomAddress(i + 12345);
+		}
+
+		erc721aBatch.safeMint(address(this), amount);
+
+		uint256[] memory ids = new uint256[](amount);
+		for (uint256 i; i < amount; i++) {
+			ids[i] = i + 1;
+		}
+
+		erc721aBatch.batchTransferFrom(address(this), to, ids);
+
+		assertEq(erc721aBatch.balanceOf(address(this)), 0);
+
+		for (uint256 i; i < amount; i++) {
+			address addy = to[i];
+			assertEq(erc721aBatch.balanceOf(addy), 1);
+			assertEq(erc721aBatch.ownerOf(ids[i]), addy);
+		}
+	}
+
+	function testBatchSafeTransferFrom1() public {
 		address to = getRandomAddress(69420);
 
 		erc721aBatch.safeMint(address(this), amount);
@@ -63,6 +89,32 @@ contract TestERC721ABatch is BaseTest {
 		assertEq(erc721aBatch.balanceOf(address(this)), 0);
 		assertEq(erc721aBatch.balanceOf(to), amount);
 
-		g = gasleft();
+		for(uint256 i; i < amount; i++) {
+			assertEq(erc721aBatch.ownerOf(ids[i]), to);
+		}
+	}
+
+	function testBatchSafeTransferFrom2() public {
+		address[] memory to = new address[](amount);
+		for (uint256 i; i < amount; i++) {
+			to[i] = getRandomAddress(i + 12345);
+		}
+
+		erc721aBatch.safeMint(address(this), amount);
+
+		uint256[] memory ids = new uint256[](amount);
+		for (uint256 i; i < amount; i++) {
+			ids[i] = i + 1;
+		}
+
+		erc721aBatch.batchSafeTransferFrom(address(this), to, ids, "");
+
+		assertEq(erc721aBatch.balanceOf(address(this)), 0);
+
+		for (uint256 i; i < amount; i++) {
+			address addy = to[i];
+			assertEq(erc721aBatch.balanceOf(addy), 1);
+			assertEq(erc721aBatch.ownerOf(ids[i]), addy);
+		}
 	}
 }
