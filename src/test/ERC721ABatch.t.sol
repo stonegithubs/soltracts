@@ -41,7 +41,7 @@ contract TestERC721ABatch is BaseTest {
 		assertEq(erc721aBatch.balanceOf(address(this)), 0);
 		assertEq(erc721aBatch.balanceOf(to), amount);
 
-		for(uint256 i; i < amount; i++) {
+		for (uint256 i; i < amount; i++) {
 			assertEq(erc721aBatch.ownerOf(ids[i]), to);
 		}
 	}
@@ -89,7 +89,7 @@ contract TestERC721ABatch is BaseTest {
 		assertEq(erc721aBatch.balanceOf(address(this)), 0);
 		assertEq(erc721aBatch.balanceOf(to), amount);
 
-		for(uint256 i; i < amount; i++) {
+		for (uint256 i; i < amount; i++) {
 			assertEq(erc721aBatch.ownerOf(ids[i]), to);
 		}
 	}
